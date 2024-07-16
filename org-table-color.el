@@ -33,7 +33,7 @@
 (require 'org-table)
 
 ;;;###autoload
-(defun org-table-color (get-face)
+(defun org-table-color (get-face &optional min-row min-col)
   "Color the 'org-mode' table at 'point', given a GET-FACE function.
 
 GET-FACE must accept a single numerical argument (the value of
@@ -44,11 +44,13 @@ will occur if the cell value is not a number.
 See `org-table-color--color-by-correlation' for an example."
   (let* ((lisp (org-table-to-lisp))
          (rows (length lisp))
-         (cols (length (car lisp))))
+         (cols (length (car lisp)))
+         (min-row (or min-row 2))
+         (min-col (or min-col 2)))
     (save-excursion
       (mapc (lambda (x) (mapc (lambda (y) (org-table-color--color-cell get-face x y))
-                              (number-sequence 2 rows)))
-            (number-sequence 2 cols)))))
+                              (number-sequence min-row rows)))
+            (number-sequence min-col cols)))))
 
 ;;;###autoload
 (defun org-table-color-correlation-matrix ()
