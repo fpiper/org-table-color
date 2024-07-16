@@ -33,6 +33,25 @@
 (require 'org-table)
 
 ;;;###autoload
+(defun org-table-color-auto ()
+  "Color table at point based on `:color' header property.
+
+If `:color' is unset use `org-table-color--color-by-correlation' as
+default.
+Set the `:color' property with the same style used for org source block header arguments:
+
+#+HEADER: :color 'my-coloring-function :color-min 1"
+  (interactive)
+  (let* ((headers (car (plist-get (car (alist-get 'table (org-element-lineage (org-element-at-point)))) :header)))
+         (args (org-babel-parse-header-arguments headers))
+         (color-func
+          (or (alist-get :color args) #'org-table-color--color-by-correlation))
+         (color-min (alist-get :color-min args))
+         (color-min-row (or (alist-get :color-row args) color-min))
+         (color-min-col (or (alist-get :color-col args) color-min)))
+    (org-table-color color-func color-min-row color-min-col)))
+
+;;;###autoload
 (defun org-table-color (get-face &optional min-row min-col)
   "Color the 'org-mode' table at 'point', given a GET-FACE function.
 
