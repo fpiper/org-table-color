@@ -61,20 +61,20 @@ See `org-table-color--color-by-correlation' for an example."
   (org-table-goto-line y)
   (org-table-goto-column x)
   (when-let* ((cell (org-table-get y x))
-              (nmbr (string-to-number cell))
-              (face (funcall get-face nmbr))
+              (face (funcall get-face cell))
               (over (make-overlay (point)
                                   (progn (org-table-end-of-field 1)
                                          (point)))))
     (overlay-put over 'face face)))
 
-(defun org-table-color--color-by-correlation (num)
-  "Color a table cell NUM value assuming it's from a correlation matrix.
+(defun org-table-color--color-by-correlation (cell)
+  "Color a table cell CELL value assuming it's from a correlation matrix.
 Yields a plist that represents a face."
+  (let ((num (string-to-number cell)))
   (cond ((>= num 0.5) '(:foreground "black" :background "green"))
         ((>= num 0.3) '(:foreground "black" :background "#90EE90"))
         ((<= num -0.5) '(:foreground "black" :background "red"))
-        ((<= num -0.3) '(:foreground "black" :background "orange"))))
+        ((<= num -0.3) '(:foreground "black" :background "orange")))))
 
 (provide 'org-table-color)
 ;;; org-table-color.el ends here
